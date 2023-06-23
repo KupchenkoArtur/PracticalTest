@@ -18,7 +18,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -106,7 +105,6 @@ class AccountServiceImplTest {
     @Test
     void deposit_ThrowsNotFoundException_WhenAccountNotFound() {
         var accountNumber = "6ce5e8d1-61af-4b92-9fa8-b2a2466c9bc4";
-        var existingAccount = new Account(accountNumber, "John Doe", "1245", new BigDecimal("500.00"));
 
         when(accountRepository.findById(accountNumber)).thenReturn(Optional.empty());
 
@@ -210,7 +208,6 @@ class AccountServiceImplTest {
         var fromAccountNumber = "6ce5e8d1-61af-4b92-9fa8-b2a2466c9bc4";
         var fromAccount = new Account(fromAccountNumber, "John Doe", "1245", BigDecimal.TEN);
         String toAccountNumber = "6ce5e8d1-61af-4b92-9fa8-b2a2466c9bc5";
-        var toAccount = new Account(toAccountNumber, "Jane Doe", "1246", BigDecimal.ZERO);
 
         when(accountRepository.findById(fromAccountNumber)).thenReturn(Optional.of(fromAccount));
         when(accountRepository.findById(toAccountNumber)).thenReturn(Optional.empty());
@@ -237,9 +234,9 @@ class AccountServiceImplTest {
         var amount = new BigDecimal(100);
         var pin = "1234";
 
-        assertThrows(NotFoundException.class, () -> {
-            accountService.withdraw(accountNumber, amount, pin);
-        });
+        assertThrows(NotFoundException.class, () ->
+            accountService.withdraw(accountNumber, amount, pin)
+        );
     }
 
     @Test
@@ -249,9 +246,9 @@ class AccountServiceImplTest {
 
         when(accountRepository.findById(fromAccountNumber)).thenReturn(Optional.of(fromAccount));
 
-        assertThrows(NotEnoughFundsException.class, () -> {
-            accountService.withdraw(fromAccountNumber, BigDecimal.valueOf(25), fromAccount.getPin());
-        });
+        assertThrows(NotEnoughFundsException.class, () ->
+            accountService.withdraw(fromAccountNumber, BigDecimal.valueOf(25), fromAccount.getPin())
+        );
     }
 
     @Test
@@ -261,8 +258,8 @@ class AccountServiceImplTest {
 
         when(accountRepository.findById(fromAccountNumber)).thenReturn(Optional.of(fromAccount));
 
-        assertThrows(InvalidPinException.class, () -> {
-            accountService.withdraw(fromAccountNumber, BigDecimal.TEN, "123");
-        });
+        assertThrows(InvalidPinException.class, () ->
+            accountService.withdraw(fromAccountNumber, BigDecimal.TEN, "123")
+        );
     }
 }
