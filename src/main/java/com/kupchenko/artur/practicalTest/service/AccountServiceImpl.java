@@ -19,6 +19,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
@@ -28,7 +29,7 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     public Optional<Account> createAccount(String name, String pin) {
 
-        if ((name == null) && (pin.length() != 4)) {
+        if ((name == null) || (pin.length() != 4)) {
             throw new InvalidPinException("Invalid value");
         }
 
@@ -50,6 +51,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Transactional
     public void deposit(String accountNumber, BigDecimal amount) {
 
         var byId = accountRepository.findById(accountNumber);
@@ -68,11 +70,12 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Transactional
     public void transfer(String fromAccountNumber, String toAccountNumber, BigDecimal amount, String pin) {
         var fromAccount = accountRepository.findById(fromAccountNumber);
         var toAccount = accountRepository.findById(toAccountNumber);
 
-        if ((fromAccount.isEmpty()) & (toAccount.isEmpty())) {
+        if ((fromAccount.isEmpty()) || (toAccount.isEmpty())) {
             throw new NotFoundException("Ошибка перевода");
         }
         if (!(fromAccount.get().getPin().equals(pin))) {
@@ -93,6 +96,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Transactional
     public void withdraw(String accountNumber, BigDecimal amount, String pin) {
 
         var byId = accountRepository.findById(accountNumber);
